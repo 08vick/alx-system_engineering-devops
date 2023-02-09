@@ -1,16 +1,33 @@
 #!/usr/bin/python3
-"""Returns to-do list information for a given employee ID."""
-import json
-from urllib import request
-import requests
-import sys
-if __name__ == "__main__":
-    u_id = sys.argv[1]
-    url = "https://jsonplaceholder.typicode.com/"
-    user = requests.get(url+"users/{}".format(u_id)).json()
-    username = user.get("username")
-    todos = requests.get(url+"todos", params={"userId": u_id}).json()
+"""grab data from an api and export to JSON"""
 
-    with open("{}.json".format(u_id), "w") as jsonfile:
-        json.dump({u_id: [{"task": t.get("title"), "completed": t.get(
-            "completed"), "username": username} for t in todos]}, jsonfile)
+import csv
+import json
+import requests
+from sys import argv
+import sys
+
+if __name__ == "__main__":
+    employeeRequest = requests.get(
+        "https://jsonplaceholder.typicode.com/users/" + argv[1])
+    employeeDict = employeeRequest.json()
+
+    todoRequest = requests.get(
+        "https://jsonplaceholder.typicode.com/todos?userId=" + argv[1])
+    todoList = todoRequest.json()
+
+    taskData = []
+    taskDict = {}
+
+    for thing in todoList:
+        taskDict = {
+            "task": thing.get("title"),
+            "completed": thing.get("completed"),
+            "username": employeeDict.get("username"),
+        }
+        taskData.append(taskDict)
+
+    jsonData = {argv[1]: taskData}
+
+    with open("{}.json".format(argv[1]), "w") as emp:
+        json.dump(jsonData, emp)
