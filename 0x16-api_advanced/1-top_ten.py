@@ -1,17 +1,18 @@
 #!/usr/bin/python3
-"""Module for task 1"""
+"""query reddit api"""
+import requests
 
 
 def top_ten(subreddit):
-    """Queries the Reddit API and returns the top 10 hot posts
-    of the subreddit"""
-    import requests
+    """return top ten hot posts from a subreddit"""
+    path = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
+    headers = {'User-agent': 'Mozilla/5.0'}
+    response = requests.get(path, allow_redirects=False, headers=headers)
+    if response.status_code in (302, 404):
+        print("None")
+        return
 
-    sub_info = requests.get("https://www.reddit.com/r/{}/hot.json?limit=10"
-                            .format(subreddit),
-                            headers={"User-Agent": "My-User-Agent"},
-                            allow_redirects=False)
-    if sub_info.status_code >= 300:
-        print('None')
-    else:
-        [print(child.get("data").get("title"))
+    json = response.json()
+    json_children = json.get('data').get('children')
+    for post in json_children:
+        print(post.get('data').get('title'))
