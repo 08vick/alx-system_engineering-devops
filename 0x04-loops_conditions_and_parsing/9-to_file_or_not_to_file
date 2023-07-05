@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# simple file information script
+
+if [[  -e "Best School" ]]; then
+	echo "Best School file exists"
+	if [[ -s "Best School" ]]; then
+		echo "Best School file is not empty"
+	else
+		echo "Best School file is empty"
+	fi
+	if [[ -f "Best School" ]]; then
+		echo "Best School is a regular file"
+	fi
+else
+	echo "Best School file does not exist"
+fi
